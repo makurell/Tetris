@@ -1,3 +1,4 @@
+import random
 from typing import *
 
 class Piece:
@@ -77,7 +78,19 @@ class Piece:
         [
             [1,1],
             [1,1],
-        ]*4
+        ],
+        [
+            [1, 1],
+            [1, 1],
+        ],
+        [
+            [1, 1],
+            [1, 1],
+        ],
+        [
+            [1, 1],
+            [1, 1],
+        ],
     ]
     SHAPE_Z=[
         [
@@ -145,6 +158,7 @@ class Piece:
             [1,0,0],
         ]
     ]
+    SHAPES=[SHAPE_I,SHAPE_J,SHAPE_L,SHAPE_O,SHAPE_S,SHAPE_T,SHAPE_Z]
     #endregion
 
     @property
@@ -204,6 +218,10 @@ class Piece:
                 i += 1
             else:
                 return i
+
+    @property
+    def width(self):
+        return len(self.shape[0])-self.lspace-self.rspace
 
     def __init__(self, x, y, rot, colour: Tuple[int,int,int], shapes: List[List[List[int]]]):
         """
@@ -280,3 +298,13 @@ class Board:
                     ret+='.'
             ret+="\n"
         return ret
+
+    def spawn_random(self):
+        p = Piece(0,0,random.randint(0,3),(0,0,255),random.choice(Piece.SHAPES))
+        print(p)
+        # x = random.randint(0-p.lspace,self.width-1-p.width+p.rspace)
+        x=0-p.lspace
+        p.x=x
+        p.y=0-p.tspace
+        print((p.x,p.y,p.rot))
+        self.pieces.append(p)
