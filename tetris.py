@@ -187,6 +187,24 @@ class Piece:
                 ret=pre
         return ret
 
+    @property
+    def tspace(self):
+        i=0
+        for row in self.shape:
+            if all([b == 0 for b in row]):
+                i += 1
+            else:
+                return i
+
+    @property
+    def bspace(self):
+        i = 0
+        for row in reversed(self.shape):
+            if all([b == 0 for b in row]):
+                i += 1
+            else:
+                return i
+
     def __init__(self, x, y, rot, colour: Tuple[int,int,int], shapes: List[List[List[int]]]):
         """
         :param colour: r,g,b tuple
@@ -244,7 +262,7 @@ class Board:
                 cur_b = 0
                 for b in row:
                     if b:
-                        ret[piece.x+cur_b][piece.y+cur_row] = piece.colour
+                        ret[piece.y+cur_row][piece.x+cur_b] = piece.colour
                     cur_b+=1
                 cur_row+=1
         return ret
