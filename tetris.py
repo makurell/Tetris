@@ -1,5 +1,8 @@
+import copy
 import random
 from typing import *
+
+EMPTY = (255, 255, 255)
 
 class Piece:
     #region shapes
@@ -257,54 +260,118 @@ class Board:
         self.height = 22
         self.hidden_top = 2
 
-        self.pieces:List[Piece]=[]
+        self.board:List[List[Tuple[int,int,int]]]=[]
 
-    @property
-    def grid(self):
-        """
-        return a 2d array of (r,g,b) values representing the state of the board: [x][y]
-        :return: List[List[Tuple[int,int,int]]]
-        """
+        self.falling = None
+        self.at_rest = False
+
         # board init
-        ret:List[List[Tuple[int,int,int]]]=[]
         for i in range(self.height):
-            buf=[]
+            buf = []
             for j in range(self.width):
-                buf.append((0,0,0))
-            ret.append(buf)
+                buf.append(EMPTY)
+            self.board.append(buf)
 
-        # pieces
-        for piece in self.pieces:
-            cur_row = 0
-            for row in piece.shape:
-                cur_b = 0
-                for b in row:
-                    if b:
-                        ret[piece.y+cur_row][piece.x+cur_b] = piece.colour
-                    cur_b+=1
-                cur_row+=1
-        return ret
+    def rboard(self):
+        """
+        rendered board: includes the falling piece as part of the board
+        """
+        return self.commit_falling(copy.deepcopy(self.board))
+
+    def commit_falling(self, board):
+        """
+        commits the falling piece into the board
+        :return:
+        """
+        cur_row = 0
+        for row in self.falling.shape:
+            cur_b = 0
+            for b in row:
+                if b:
+                    board[self.falling.y + cur_row][self.falling.x + cur_b] = self.falling.colour
+                cur_b += 1
+            cur_row += 1
+        return board
 
     def __str__(self):
         """
         get string representation of board state
         """
         ret=""
-        for row in self.grid:
+        for row in self.rboard():
             for pixel in row:
-                if pixel != (0,0,0):
+                if pixel != EMPTY:
                     ret+='#'
                 else:
                     ret+='.'
             ret+="\n"
         return ret
 
-    def spawn_random(self):
+    def new_falling(self):
+        """
+        spawn a random new piece to be falling
+        :return:
+        """
+        self.at_rest = False
+
         p = Piece(0,0,random.randint(0,3),(0,0,255),random.choice(Piece.SHAPES))
-        # print(p)
         x = random.randint(0-p.lspace,self.width-p.width-p.lspace)
         p.x=x
         p.y=0-p.tspace
-        # print((p.x,p.y,p.rot))
-        # print('width: '+str(p.width))
-        self.pieces.append(p)
+
+        self.falling = p
+
+    def check_overlap(self, shape, x, y):
+        """
+        check if the shape will overlap with anything if committed to the board at the coordinates
+        """
+        cur_row = 0
+        for row in shape:
+            cur_b = 0
+            for b in row:
+                if b:
+                    try:
+                        if self.board[y + cur_row][x+ cur_b] != EMPTY:
+                            return True
+                    except IndexError:
+                        return True
+                cur_b += 1
+            cur_row += 1
+        return False
+
+    def rotate(self,right=True):
+        """
+        rotate the currently falling piece
+        :param right: the direction to loop through the possible rotations
+        """
+        nr = (self.falling.rot+(1 if right else -1)) % len(self.falling.shapes)
+        if not self.check_overlap(self.falling.shapes[nr],self.falling.x,self.falling.y):
+            # commit rotation
+            self.falling.rot = nr
+
+    def shift(self, dx):
+        """
+        shift the currently falling piece
+        :return:
+        """
+        nx = self.falling.x+dx
+        if not self.check_overlap(self.falling.shape,nx,self.falling.y):
+            # commit shifting
+            self.falling.x=nx
+
+    def step(self):
+        if self.at_rest:
+            # commit piece
+            self.board = self.commit_falling(self.board)
+
+            self.new_falling()
+        else:
+            self.gravity()
+
+    def gravity(self):
+        nx,ny = (self.falling.x,self.falling.y+1)
+        if not self.check_overlap(self.falling.shape,nx,ny):
+            self.falling.x=nx
+            self.falling.y=ny
+        else:
+            self.at_rest = True

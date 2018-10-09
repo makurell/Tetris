@@ -1,3 +1,5 @@
+import time
+
 from tetris import Piece, Board
 from pprint import pprint
 
@@ -12,5 +14,9 @@ p = Piece(0,0,0,(255,255,255),Piece.SHAPE_L)
 
 
 # b.pieces.append(p)
-b.spawn_random()
+b.new_falling()
 print(b)
+while True:
+    b.step()
+    print(b)
+    time.sleep(.2)
