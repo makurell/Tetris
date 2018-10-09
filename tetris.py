@@ -265,6 +265,8 @@ class Board:
         self.falling = None
         self.at_rest = False
 
+        self.game_over = False
+
         # board init
         for i in range(self.height):
             buf = []
@@ -319,7 +321,11 @@ class Board:
         p.x=x
         p.y=0-p.tspace
 
-        self.falling = p
+        if not self.check_overlap(p.shape,p.x,p.y):
+            self.falling = p
+        else:
+            # game over
+            self.game_over = True
 
     def check_overlap(self, shape, x, y):
         """
@@ -360,13 +366,33 @@ class Board:
             self.falling.x=nx
 
     def step(self):
+        if self.game_over:
+            print("game over")
+            return
+
         if self.at_rest:
             # commit piece
             self.board = self.commit_falling(self.board)
+            self.clear_lines()
 
             self.new_falling()
         else:
             self.gravity()
+
+    def clear_lines(self):
+        cleared=[]
+        i=0
+        for row in self.board:
+            if all([x != EMPTY for x in row]):
+                cleared.append(i)
+            i+=1
+
+        for i in cleared:
+            self.board.pop(i)
+            buf = []
+            for j in range(self.width):
+                buf.append(EMPTY)
+            self.board.insert(0,buf)
 
     def gravity(self):
         nx,ny = (self.falling.x,self.falling.y+1)
