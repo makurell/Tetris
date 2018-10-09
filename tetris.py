@@ -301,10 +301,10 @@ class Board:
 
     def spawn_random(self):
         p = Piece(0,0,random.randint(0,3),(0,0,255),random.choice(Piece.SHAPES))
-        print(p)
-        # x = random.randint(0-p.lspace,self.width-1-p.width+p.rspace)
-        x=0-p.lspace
+        # print(p)
+        x = random.randint(0-p.lspace,self.width-p.width-p.lspace)
         p.x=x
         p.y=0-p.tspace
-        print((p.x,p.y,p.rot))
+        # print((p.x,p.y,p.rot))
+        # print('width: '+str(p.width))
         self.pieces.append(p)
