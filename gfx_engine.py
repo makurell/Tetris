@@ -7,13 +7,15 @@ from pygame.locals import *
 class Engine:
     def __init__(self):
         self.board = Board()
-        self.screen = pygame.display.set_mode((500,800))
 
         self.board.new_falling() # initial falling piece
 
         self.cell_width = 20
         self.offx = 0
         self.offy = 0
+
+        self.screen = pygame.display.set_mode((self.cell_width*self.board.width,
+                                               self.cell_width*(self.board.height-self.board.hidden_top)))
 
     def run(self):
         while True:
@@ -23,13 +25,13 @@ class Engine:
             self.update()
 
             # wait for remaining time
-            pygame.time.wait(40-(pygame.time.get_ticks() - t0))
+            pygame.time.wait(200-(pygame.time.get_ticks() - t0))
 
     def draw(self):
         # clear screen
         self.screen.fill((0,0,0))
         cur_row = 0
-        for row in self.board.rboard():
+        for row in self.board.rboard()[self.board.hidden_top:]:
             cur_cell = 0
             for cell in row:
                 pygame.draw.rect(self.screen,cell,pygame.Rect(
@@ -59,6 +61,8 @@ class Engine:
             self.board.shift(-1)
         if keys[K_RIGHT]:
             self.board.shift(1)
+        if keys[K_SPACE]:
+            self.board.rotate()
 
 
 if __name__ == '__main__':
