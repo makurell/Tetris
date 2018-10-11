@@ -1,5 +1,5 @@
 import sys
-
+import tetris
 from tetris import Board, Piece
 import pygame
 from pygame.locals import *
@@ -39,11 +39,15 @@ class Engine:
         for row in self.board.rboard()[self.board.hidden_top:]:
             cur_cell = 0
             for cell in row:
-                pygame.draw.rect(self.screen,cell,pygame.Rect(
+
+                rect=pygame.Rect(
                     cur_cell*self.cell_width,
                     cur_row*self.cell_width,
                     self.cell_width,
-                    self.cell_width))
+                    self.cell_width)
+
+                pygame.draw.rect(self.screen,cell,rect)
+                pygame.draw.rect(self.screen,tetris.EMPTY,rect,2)
                 cur_cell+=1
             cur_row+=1
 

@@ -2,7 +2,7 @@ import copy
 import random
 from typing import *
 
-EMPTY = (39,40,34)
+EMPTY = (40,44,52)
 
 class Piece:
     #region shapes
@@ -254,7 +254,14 @@ class Piece:
         return ret.strip()
 
 class Board:
-    PALETTE = [(242,95,92),(255,224,102),(36,123,160),(112,193,179)]
+    PALETTE = [(224,108,117),
+               (152,195,121),
+               (209,154,102),
+               (97,174,238),
+               (198,120,221),
+               (86,182,194),
+               (171,178,191),
+               ]
 
     def __init__(self):
         # standard Tetris board guidelines:
