@@ -42,13 +42,14 @@ class Engine:
                 last_game_running = self.tickno
             else:
                 # game over screen
-                if self.tickno*self.frame_time % (self.hold_speed*1) == 0 and (self.tickno-last_game_running)<10:
+                if self.tickno % 2 == 0 and (self.tickno-last_game_running)<20:
                     # fade background
                     self.draw_transp()
-                    pygame.display.flip()
                 else:
                     # text
                     self.draw_text(self.font1,'Game Over',0.5,0.5)
+
+                pygame.display.flip()
 
             # wait for remaining time
             pygame.time.wait(self.frame_time-(pygame.time.get_ticks() - t0))
@@ -67,7 +68,7 @@ class Engine:
 
         self.screen.blit(font.render(text,False,colour),(rx,ry))
 
-    def draw_transp(self,alpha=100):
+    def draw_transp(self,alpha=50):
         """
         draw a semi-transparent overlay on top of the screen
         """
