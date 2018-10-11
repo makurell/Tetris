@@ -20,22 +20,61 @@ class Engine:
         self.hold_time = 200 # amount of ms for a button to be held
         self.hold_speed = 30 # amount of ms between updates when holding
 
+        # setup
         self.screen = pygame.display.set_mode((self.cell_width*self.board.width,
                                                self.cell_width*(self.board.height-self.board.hidden_top)))
         pygame.display.set_caption('Makurell Tetris')
 
+        pygame.font.init()
+        self.font1 = pygame.font.SysFont('Arial',20)
+        self.font2 = pygame.font.SysFont('Arial',15)
+
         self.down_keys = {}
 
     def run(self):
+        last_game_running = 0
         while True:
             t0 = pygame.time.get_ticks()
 
-            self.draw()
-            self.update()
+            if not self.board.game_over:
+                self.draw()
+                self.update()
+                last_game_running = self.tickno
+            else:
+                # game over screen
+                if self.tickno*self.frame_time % (self.hold_speed*1) == 0 and (self.tickno-last_game_running)<10:
+                    # fade background
+                    self.draw_transp()
+                    pygame.display.flip()
+                else:
+                    # text
+                    self.draw_text(self.font1,'Game Over',0.5,0.5)
 
             # wait for remaining time
             pygame.time.wait(self.frame_time-(pygame.time.get_ticks() - t0))
             self.tickno+=1
+
+    def draw_text(self, font, text:str, x:float, y:float, center=True, colour=(255,255,255)):
+        """
+        Draw given text at the specified position. Coords to be given as fractions of total width/height.
+        """
+        if not center:
+            # top-left
+            rx, ry = self.screen.get_width()*x, self.screen.get_height()*y
+        else:
+            w, h = font.size(text)
+            rx, ry = self.screen.get_width()*x-(w/2.0), self.screen.get_height()*y-(h/2.0)
+
+        self.screen.blit(font.render(text,False,colour),(rx,ry))
+
+    def draw_transp(self,alpha=100):
+        """
+        draw a semi-transparent overlay on top of the screen
+        """
+        transp = pygame.Surface((self.screen.get_width(),self.screen.get_height()))
+        transp.set_alpha(alpha)
+        transp.fill(tetris.EMPTY)
+        self.screen.blit(transp,(0,0))
 
     def draw(self):
         # clear screen
@@ -59,7 +98,6 @@ class Engine:
         pygame.display.flip()
 
     def update(self):
-
         # gameplay
         self.input_update()
 
