@@ -45,24 +45,26 @@ class Engine:
         pygame.display.flip()
 
     def update(self):
-        for event in pygame.event.get():
-            if event.type == QUIT:
-                sys.exit()
 
         # gameplay
         self.input_update()
         self.board.step()
 
-    def input_update(self, keys=None):
-        if keys is None:
-            keys = pygame.key.get_pressed()
+    def input_update(self, events=None):
+        if events is None:
+            events = pygame.event.get()
 
-        if keys[K_LEFT]:
-            self.board.shift(-1)
-        if keys[K_RIGHT]:
-            self.board.shift(1)
-        if keys[K_SPACE]:
-            self.board.rotate()
+        for event in events:
+            if event.type == QUIT:
+                sys.exit()
+
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_LEFT:
+                    self.board.shift(-1)
+                if event.key == pygame.K_RIGHT:
+                    self.board.shift(1)
+                if event.key == pygame.K_SPACE:
+                    self.board.rotate()
 
 
 if __name__ == '__main__':
