@@ -34,7 +34,7 @@ class Engine:
 
     def draw(self):
         # clear screen
-        self.screen.fill((0,0,0))
+        self.screen.fill(tetris.EMPTY)
         cur_row = 0
         for row in self.board.rboard()[self.board.hidden_top:]:
             cur_cell = 0
@@ -47,7 +47,7 @@ class Engine:
                     self.cell_width)
 
                 pygame.draw.rect(self.screen,cell,rect)
-                pygame.draw.rect(self.screen,tetris.EMPTY,rect,2)
+                pygame.draw.rect(self.screen,tetris.EMPTY,rect,1)
                 cur_cell+=1
             cur_row+=1
 
@@ -58,9 +58,9 @@ class Engine:
         # gameplay
         self.input_update()
 
-        if self.tickno % (self.frame_time/self.speed) == 0:
+        if self.tickno % (self.frame_time//self.speed) == 0:
             self.board.step()
-            # self.speed+=0.01 # increase speed as time goes on to incr difficult
+            self.speed+=0.001 # increase speed as time goes on to incr difficult
 
     def input_update(self, events=None):
         if events is None:
@@ -77,6 +77,8 @@ class Engine:
                     self.board.shift(1)
                 if event.key == pygame.K_SPACE:
                     self.board.rotate()
+                if event.key == pygame.K_DOWN:
+                    self.board.drop()
 
 
 if __name__ == '__main__':

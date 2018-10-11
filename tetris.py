@@ -346,6 +346,7 @@ class Board:
             for b in row:
                 if b:
                     try:
+                        if y+cur_row < 0 or x+cur_b<0: return True
                         if self.board[y + cur_row][x+ cur_b] != EMPTY:
                             return True
                     except IndexError:
@@ -374,6 +375,13 @@ class Board:
             # commit shifting
             self.falling.x=nx
             self.at_rest=False
+
+    def drop(self):
+        """
+        drop the currently falling piece
+        """
+        while not self.at_rest:
+            self.step()
 
     def step(self):
         if self.game_over:
