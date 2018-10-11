@@ -364,6 +364,7 @@ class Board:
         if not self.check_overlap(self.falling.shapes[nr],self.falling.x,self.falling.y):
             # commit rotation
             self.falling.rot = nr
+            self.at_rest = False
 
     def shift(self, dx):
         """

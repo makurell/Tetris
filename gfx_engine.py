@@ -37,6 +37,7 @@ class Engine:
             t0 = pygame.time.get_ticks()
 
             if not self.board.game_over:
+                # game loop
                 self.draw()
                 self.update()
                 last_game_running = self.tickno
