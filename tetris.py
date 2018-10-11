@@ -2,7 +2,7 @@ import copy
 import random
 from typing import *
 
-EMPTY = (255, 255, 255)
+EMPTY = (39,40,34)
 
 class Piece:
     #region shapes
@@ -254,6 +254,8 @@ class Piece:
         return ret.strip()
 
 class Board:
+    PALETTE = [(242,95,92),(255,224,102),(36,123,160),(112,193,179)]
+
     def __init__(self):
         # standard Tetris board guidelines:
         self.width = 10
@@ -316,7 +318,7 @@ class Board:
         """
         self.at_rest = False
 
-        p = Piece(0,0,random.randint(0,3),(0,0,255),random.choice(Piece.SHAPES))
+        p = Piece(0,0,random.randint(0,3),random.choice(self.PALETTE),random.choice(Piece.SHAPES))
         x = random.randint(0-p.lspace,self.width-p.width-p.lspace)
         p.x=x
         p.y=0-p.tspace

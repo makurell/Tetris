@@ -16,6 +16,7 @@ class Engine:
 
         self.tickno = 0
         self.frame_time = 20
+        self.speed = 2
 
         self.screen = pygame.display.set_mode((self.cell_width*self.board.width,
                                                self.cell_width*(self.board.height-self.board.hidden_top)))
@@ -53,8 +54,9 @@ class Engine:
         # gameplay
         self.input_update()
 
-        if self.tickno% self.frame_time ==0:
+        if self.tickno % (self.frame_time/self.speed) == 0:
             self.board.step()
+            # self.speed+=0.01 # increase speed as time goes on to incr difficult
 
     def input_update(self, events=None):
         if events is None:
