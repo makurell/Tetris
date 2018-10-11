@@ -15,11 +15,16 @@ class Engine:
         self.offy = 0
 
         self.tickno = 0
-        self.frame_time = 20
+        self.frame_time = 20 # amount of ms each frame is to be shown
         self.speed = 2
+        self.hold_time = 200 # amount of ms for a button to be held
+        self.hold_speed = 30 # amount of ms between updates when holding
 
         self.screen = pygame.display.set_mode((self.cell_width*self.board.width,
                                                self.cell_width*(self.board.height-self.board.hidden_top)))
+        pygame.display.set_caption('Makurell Tetris')
+
+        self.down_keys = {}
 
     def run(self):
         while True:
@@ -62,6 +67,12 @@ class Engine:
             self.board.step()
             self.speed+=0.001 # increase speed as time goes on to incr difficult
 
+    def should_register(self, key):
+        return key in self.down_keys \
+               and (self.down_keys[key] == self.tickno
+                    or (self.tickno - self.down_keys[key])*self.frame_time>self.hold_time
+                    and self.tickno*self.frame_time % self.hold_speed == 0)
+
     def input_update(self, events=None):
         if events is None:
             events = pygame.event.get()
@@ -71,14 +82,23 @@ class Engine:
                 sys.exit()
 
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_LEFT:
-                    self.board.shift(-1)
-                if event.key == pygame.K_RIGHT:
-                    self.board.shift(1)
-                if event.key == pygame.K_SPACE:
-                    self.board.rotate()
-                if event.key == pygame.K_DOWN:
-                    self.board.drop()
+                self.down_keys[event.key] = self.tickno
+
+            if event.type == pygame.KEYUP:
+                try:
+                    del self.down_keys[event.key]
+                except KeyError:
+                    # x not in dict = ignore
+                    pass
+
+        if self.should_register(pygame.K_LEFT):
+                self.board.shift(-1)
+        if self.should_register(pygame.K_RIGHT):
+            self.board.shift(1)
+        if self.should_register(pygame.K_SPACE) or self.should_register(pygame.K_UP):
+            self.board.rotate()
+        if self.should_register(pygame.K_DOWN):
+            self.board.drop()
 
 
 if __name__ == '__main__':
