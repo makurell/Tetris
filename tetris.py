@@ -364,6 +364,7 @@ class Board:
         if not self.check_overlap(self.falling.shape,nx,self.falling.y):
             # commit shifting
             self.falling.x=nx
+            self.at_rest=False
 
     def step(self):
         if self.game_over:

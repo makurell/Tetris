@@ -14,6 +14,9 @@ class Engine:
         self.offx = 0
         self.offy = 0
 
+        self.tickno = 0
+        self.frame_time = 20
+
         self.screen = pygame.display.set_mode((self.cell_width*self.board.width,
                                                self.cell_width*(self.board.height-self.board.hidden_top)))
 
@@ -25,7 +28,8 @@ class Engine:
             self.update()
 
             # wait for remaining time
-            pygame.time.wait(200-(pygame.time.get_ticks() - t0))
+            pygame.time.wait(self.frame_time-(pygame.time.get_ticks() - t0))
+            self.tickno+=1
 
     def draw(self):
         # clear screen
@@ -48,7 +52,9 @@ class Engine:
 
         # gameplay
         self.input_update()
-        self.board.step()
+
+        if self.tickno% self.frame_time ==0:
+            self.board.step()
 
     def input_update(self, events=None):
         if events is None:
