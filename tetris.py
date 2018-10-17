@@ -164,6 +164,17 @@ class Piece:
     SHAPES=[SHAPE_I,SHAPE_J,SHAPE_L,SHAPE_O,SHAPE_S,SHAPE_T,SHAPE_Z]
     #endregion
 
+    def __init__(self, x, y, rot, colour: Tuple[int,int,int], shapes: List[List[List[int]]]):
+        """
+        :param colour: r,g,b tuple
+        :param shapes: 2d arrays (matricies) of 1s and 0s, defining rotation positions
+        """
+        self.shapes = shapes
+        self.colour = colour
+        self.x = x
+        self.y = y
+        self.rot = rot
+
     @property
     def shape(self):
         return self.shapes[self.rot]
@@ -174,16 +185,16 @@ class Piece:
         gets the amount of empty left columns
         :return:
         """
-        ret=1000
+        ret = 1000
         for row in self.shape:
-            pre=0
+            pre = 0
             for b in row:
                 if b:
                     break
                 else:
-                    pre+=1
-            if pre<ret:
-                ret=pre
+                    pre += 1
+            if pre < ret:
+                ret = pre
         return ret
 
     @property
@@ -192,21 +203,21 @@ class Piece:
         gets the amount of empty right columns
         :return:
         """
-        ret=1000
+        ret = 1000
         for row in self.shape:
-            pre=0
+            pre = 0
             for b in reversed(row):
                 if b:
                     break
                 else:
-                    pre+=1
-            if pre<ret:
-                ret=pre
+                    pre += 1
+            if pre < ret:
+                ret = pre
         return ret
 
     @property
     def tspace(self):
-        i=0
+        i = 0
         for row in self.shape:
             if all([b == 0 for b in row]):
                 i += 1
@@ -224,18 +235,7 @@ class Piece:
 
     @property
     def width(self):
-        return len(self.shape[0])-self.lspace-self.rspace
-
-    def __init__(self, x, y, rot, colour: Tuple[int,int,int], shapes: List[List[List[int]]]):
-        """
-        :param colour: r,g,b tuple
-        :param shapes: array of 16bit binary numbers (4x4 matricies) defining orientations
-        """
-        self.shapes = shapes
-        self.colour = colour
-        self.x = x
-        self.y = y
-        self.rot = rot
+        return len(self.shape[0]) - self.lspace - self.rspace
 
     def __str__(self):
         """
@@ -260,8 +260,7 @@ class Board:
                (97,174,238),
                (198,120,221),
                (86,182,194),
-               (171,178,191),
-               ]
+               (171,178,191)]
 
     def __init__(self):
         # standard Tetris board guidelines:
